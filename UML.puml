@@ -1,0 +1,185 @@
+@startuml
+class com.example.chatapp.models.Users {
++ String name
+}
+class com.example.chatapp.utilities.PreferenceManager {
+- SharedPreferences sharedPreferences
++ void setBoolean(String,Boolean)
++ Boolean getBoolean(String)
++ void putString(String,String)
++ String getString(String)
++ void clear()
+}
+class com.example.chatapp.activities.MainActivity {
+- ActivityMainBinding binding
+- PreferenceManager preferenceManager
+- List<Message> recentConversations
+- RecentConvoAdapt recentConvoAdapt
+- FirebaseFirestore db
+- EventListener<QuerySnapshot> eventListener
+# void onCreate(Bundle)
+- void setListeners()
+- void initialize()
+- void listenerConvo()
++ void userDetails()
+- void showToast(String)
+- void FCMToken(String)
+- void getToken()
+- void SignOut()
++ void onUserClicked(Users)
+}
+class com.example.chatapp.activities.SignInActivity {
+- ActivitySignInBinding binding
+- PreferenceManager preferenceManager
+# void onCreate(Bundle)
+- void setListeners()
+- void showToast(String)
+- void signIn()
+- void Loading(Boolean)
+- boolean DetailsValid()
+}
+class com.example.chatapp.firebase.MessagingService {
++ void onNewToken(String)
++ void onMessageReceived(RemoteMessage)
+}
+class com.example.chatapp.activities.UserActivity {
+- ActivityUserBinding binding
+- PreferenceManager preferenceManager
+# void onCreate(Bundle)
+- void setListeners()
+- void getUsers()
+- void errors()
+- void Loading(Boolean)
++ void onUserClicked(Users)
+}
+class com.example.chatapp.adapters.UserAdapt {
+- List<Users> users
+- UserListener userListener
++ UserViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(UserViewHolder,int)
++ int getItemCount()
+- Bitmap userImg(String)
+}
+class com.example.chatapp.adapters.UserAdapt$UserViewHolder {
+~ UserContainerBinding binding
+~ void setData(Users)
+}
+class com.example.chatapp.utilities.Constants {
++ {static} String KEY_COLLECTION_USERS
++ {static} String KEY_NAME
++ {static} String KEY_EMAIL
++ {static} String KEY_PASSWORD
++ {static} String KEY_PREFERENCE_NAME
++ {static} String KEY_SIGNED_IN
++ {static} String KEY_USER_ID
++ {static} String KEY_IMAGE
++ {static} String KEY_FCM_TOKEN
++ {static} String KEY_USER
++ {static} String KEY_SENDER
++ {static} String KEY_CHAT_COLL
++ {static} String KEY_RECEIVER
++ {static} String KEY_TIMESTAMP
++ {static} String KEY_MSG
++ {static} String KEY_RECENT_CONVO
++ {static} String KEY_NAME_RECEIVER
++ {static} String KEY_IMG_RECEIVER
++ {static} String KEY_NAME_SENDER
++ {static} String KEY_IMG_SENDER
++ {static} String KEY_CONVERSATIONS_COLL
+}
+class com.example.chatapp.activities.SignUpActivity {
+- ActivitySignUpBinding binding
+- String encodedImage
+- PreferenceManager preferenceManager
+- ActivityResultLauncher<Intent> pickImage
+# void onCreate(Bundle)
+- void setListeners()
+- void showToast(String)
+- void signUp()
+- String encodedImage(Bitmap)
+- boolean isValid()
+- void Loading(Boolean)
+}
+class com.example.chatapp.adapters.ChtAdapt {
+- List<Message> messages
+- String IdSend
+- {static} int VIEW_TYPE_SENT
+- {static} int VIEW_TYPE_RECEIVED
++ RecyclerView.ViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(RecyclerView.ViewHolder,int)
++ int getItemCount()
++ int getItemViewType(int)
+}
+class com.example.chatapp.adapters.ChtAdapt$SentMessageViewHolder {
+- SentMessageContainerBinding binding
+~ void setData(Message)
+}
+class com.example.chatapp.adapters.ChtAdapt$RecieveMessageViewHolder {
+- RecievedMessageContainerBinding binding
+~ void setData(Message)
+}
+class com.example.chatapp.activities.ChattingActivity {
+- ActivityChattingBinding binding
+- Users receiverUsers
+- ChtAdapt chtAdapt
+- List<Message> messageList
+- PreferenceManager preferenceManager
+- FirebaseFirestore db
++ String IdConvo
+- EventListener<QuerySnapshot> eventListener
+- OnCompleteListener<QuerySnapshot> convoCompleteListener
+# void onCreate(Bundle)
+- void setListeners()
+- void initialize()
+- void SendingMsg()
+- void listenMsg()
+- void addHistoryConvo(HashMap<String,Object>)
+- void updateHistoryConvo(String)
+- void ConvoChecking()
+- void ConvoCheckingRemotely(String,String)
++ String TimeFormat(Date)
+- void loadReceiver()
+}
+interface com.example.chatapp.listeners.UserListener {
+~ void onUserClicked(Users)
+}
+class com.example.chatapp.adapters.RecentConvoAdapt {
+- List<Message> messageList
+- UserListener userListener
++ ConvoViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(ConvoViewHolder,int)
++ int getItemCount()
+- Bitmap userImg(String)
+}
+class com.example.chatapp.adapters.RecentConvoAdapt$ConvoViewHolder {
+~ UserContainerRecentChatBinding binding
+~ void setData(Message)
+}
+class com.example.chatapp.models.Message {
++ String IdSend
++ Date dateObject
++ String UserConvoId
+}
+
+
+java.io.Serializable <|.. com.example.chatapp.models.Users
+com.example.chatapp.listeners.UserListener <|.. com.example.chatapp.activities.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.chatapp.activities.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.chatapp.activities.SignInActivity
+com.google.firebase.messaging.FirebaseMessagingService <|-- com.example.chatapp.firebase.MessagingService
+com.example.chatapp.listeners.UserListener <|.. com.example.chatapp.activities.UserActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.chatapp.activities.UserActivity
+com.example.chatapp.adapters.Adapter <|-- com.example.chatapp.adapters.UserAdapt
+com.example.chatapp.adapters.UserAdapt +.. com.example.chatapp.adapters.UserAdapt$UserViewHolder
+com.example.chatapp.adapters.ViewHolder <|-- com.example.chatapp.adapters.UserAdapt$UserViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.chatapp.activities.SignUpActivity
+com.example.chatapp.adapters.Adapter <|-- com.example.chatapp.adapters.ChtAdapt
+com.example.chatapp.adapters.ChtAdapt +.. com.example.chatapp.adapters.ChtAdapt$SentMessageViewHolder
+com.example.chatapp.adapters.ViewHolder <|-- com.example.chatapp.adapters.ChtAdapt$SentMessageViewHolder
+com.example.chatapp.adapters.ChtAdapt +.. com.example.chatapp.adapters.ChtAdapt$RecieveMessageViewHolder
+com.example.chatapp.adapters.ViewHolder <|-- com.example.chatapp.adapters.ChtAdapt$RecieveMessageViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.chatapp.activities.ChattingActivity
+com.example.chatapp.adapters.Adapter <|-- com.example.chatapp.adapters.RecentConvoAdapt
+com.example.chatapp.adapters.RecentConvoAdapt +.. com.example.chatapp.adapters.RecentConvoAdapt$ConvoViewHolder
+com.example.chatapp.adapters.ViewHolder <|-- com.example.chatapp.adapters.RecentConvoAdapt$ConvoViewHolder
+@enduml
