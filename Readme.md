@@ -10,7 +10,7 @@ This repo i made Android Chatting App with Android Studio
 
 ## Screenshots
 ### Sign-Up
-<img src="Img/SignUp.png" />
+<img src="Img/SignUp.png" widht="300" height="300"/>
 ### Sign-In
 <img src="Img/SignIn.png" />
 ### Main Page
