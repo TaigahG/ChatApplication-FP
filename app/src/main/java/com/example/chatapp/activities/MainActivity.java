@@ -69,9 +69,11 @@ public class MainActivity extends AppCompatActivity implements UserListener {
     }
 
     private void listenerConvo(){
+        // Listen for changes in conversations where the current user is the sender
         db.collection(Constants.KEY_CONVERSATIONS_COLL)
                 .whereEqualTo(Constants.KEY_SENDER, preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
+        // Listen for changes in conversations where the current user is the receiver
         db.collection(Constants.KEY_CONVERSATIONS_COLL)
                 .whereEqualTo(Constants.KEY_RECEIVER, preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
@@ -84,12 +86,14 @@ public class MainActivity extends AppCompatActivity implements UserListener {
         if(value != null){
             for(DocumentChange documentChange : value.getDocumentChanges()){
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
+                    // Retrieve the message details from Firestore
                     String IDSender = documentChange.getDocument().getString(Constants.KEY_SENDER);
                     String IDReceiver = documentChange.getDocument().getString(Constants.KEY_RECEIVER);
                     Message message = new Message();
                     message.IdSend = IDSender;
                     message.IdRecive = IDReceiver;
 
+                    // Determine the user conversation details based on the sender and receiver IDs
                     if(preferenceManager.getString(Constants.KEY_USER_ID).equals(IDSender)){
                         message.UserConvoName = documentChange.getDocument().getString(Constants.KEY_NAME_RECEIVER);
                         message.UserConvoImg = documentChange.getDocument().getString(Constants.KEY_IMG_RECEIVER);
@@ -104,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements UserListener {
                     message.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                     recentConversations.add(message);
                 } else if(documentChange.getType() == DocumentChange.Type.MODIFIED){
+                    // Update the recent conversation details if modified
                     for(int i = 0; i<recentConversations.size(); i++){
                         String IDSender = documentChange.getDocument().getString(Constants.KEY_SENDER);
                         String IDReceiver = documentChange.getDocument().getString(Constants.KEY_RECEIVER);
@@ -115,10 +120,15 @@ public class MainActivity extends AppCompatActivity implements UserListener {
                     }
                 }
             }
+            // Sort the recent conversations based on the date object
             Collections.sort(recentConversations, (obj1, obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
+            // Notify the adapter about the data change
             recentConvoAdapt.notifyDataSetChanged();
+            // Scroll the RecyclerView to the top
             binding.convoRecycleReview.smoothScrollToPosition(0);
+            // Make the RecyclerView visible
             binding.convoRecycleReview.setVisibility(View.VISIBLE);
+            // Hide the progress bar
             binding.progressBar.setVisibility(View.GONE);
 
         }

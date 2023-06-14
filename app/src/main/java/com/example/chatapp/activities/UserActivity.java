@@ -41,6 +41,7 @@ public class UserActivity extends AppCompatActivity implements UserListener {
     //get the user data
     private void getUsers(){
         Loading(true);
+        // Access Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_USERS)
                 .get()
@@ -49,10 +50,12 @@ public class UserActivity extends AppCompatActivity implements UserListener {
                     String currUserId = preferenceManager.getString(Constants.KEY_USER_ID);
                     if(task.isSuccessful() && task.getResult() != null){
                         List<Users> users = new ArrayList<>();
+                        // Iterate over the retrieved documents
                         for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()){
                             if(currUserId.equals(queryDocumentSnapshot.getId())){
                                 continue;
                             }
+                            // Extract user information from the document
                             Users user = new Users();
                             user.id = queryDocumentSnapshot.getId();
                             user.name = queryDocumentSnapshot.getString(Constants.KEY_NAME);

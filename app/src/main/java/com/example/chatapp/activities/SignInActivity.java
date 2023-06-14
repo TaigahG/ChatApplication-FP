@@ -53,12 +53,15 @@ public class SignInActivity extends AppCompatActivity {
 
     private void signIn(){
         Loading(true);
+        // Access Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //checking if user input is the same as one of the users data
         db.collection(Constants.KEY_COLLECTION_USERS)
                 .whereEqualTo(Constants.KEY_EMAIL, binding.inputEmail.getText().toString())
                 .whereEqualTo(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString())
                 .get()
                 .addOnCompleteListener(task -> {
+                    //if true signed in
                     if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocumentChanges().size() > 0){
                         DocumentSnapshot ds = task.getResult().getDocuments().get(0);
                         preferenceManager.setBoolean(Constants.KEY_SIGNED_IN, true);
@@ -88,14 +91,17 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private boolean DetailsValid(){
+        //if email field is empyt
         if(binding.inputEmail.getText().toString().trim().isEmpty()){
             showToast("Enter email");
             return false;
         }
+        //if password field is empty
         else if(binding.inputPassword.getText().toString().trim().isEmpty()){
             showToast("Enter password");
             return false;
         }
+        //if email is not in valid format
         else if(!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()){
             showToast("Enter valid email");
             return false;
